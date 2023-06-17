@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>class</title>
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app1"></div>
+</body>
+
+<script>
+    const { h } = Vue
+
+    const vnode = h('div', {
+        class: 'test'
+    }, 'hello word')
+    console.log(vnode)
+
+    const vnode1 = h('div', {
+        class: [
+            'cls1',
+            { 'cls2': true, 'cls3': true }
+        ]
+    }, 'hello word')
+    console.log(vnode1)
+
+    const vnode2 = h('div', {
+        class: {
+            'cls1': true,
+            'cls2': false,
+            'cls3': true,
+        }
+    }, 'hello word')
+    console.log(vnode2)
+</script>
+
+</html>

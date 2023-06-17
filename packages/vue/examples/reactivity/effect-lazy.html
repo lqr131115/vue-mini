@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>effect-lazy</title>
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app1"></div>
+</body>
+
+<script>
+    const { reactive, effect, computed } = Vue
+
+    const state = reactive({
+        count: 0
+    })
+
+
+    effect(() => {
+        console.log(state)
+    }, {
+        lazy: true
+    })
+
+    state.count = 1
+
+</script>
+
+</html>

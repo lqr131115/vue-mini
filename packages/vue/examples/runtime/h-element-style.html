@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>h-element-style</title>
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+
+<script>
+    const { h } = Vue
+
+    const vnode1 = h('div', {
+        style: [
+            "font-weight:bold;font-size:60px",
+            {
+                'color': 'blue'
+            }
+        ],
+    }, 'hello word')
+
+    console.log('vnode1', vnode1)
+
+
+    const vnode2 = h('div', {
+        style: "font-weight:bold;font-size:60px",
+    }, 'hello word')
+
+    console.log('vnode2', vnode2)
+
+</script>
+
+</html>
