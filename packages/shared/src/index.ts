@@ -3,6 +3,9 @@ export * from './shapeFlags'
 export const EMPTY_OBJ: { readonly [key: string]: any } = {}
 export const NOOP = () => {}
 
+const onRE = /^on[^a-z]/
+export const isOn = (key: string) => onRE.test(key)
+
 export const isArray = Array.isArray
 export const isObject = (val: unknown): val is object =>
   val !== null && typeof val === 'object'

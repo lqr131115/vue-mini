@@ -5,31 +5,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>h-element</title>
+    <title>render-element</title>
     <script src="../../dist/vue.js"></script>
 </head>
 
 <body>
-    <div id="app1"></div>
+    <div id="app"></div>
 </body>
 
 <script>
-    const { h } = Vue
+    const { h, render } = Vue
 
     const vnode = h('div', {
         class: [
             'cls1',
             { 'cls2': true, 'cls3': true }
         ],
-        styles: [
+        style: [
             "font-weight:bold;font-size:60px",
             {
                 'color': 'blue'
             }
-        ]
+        ],
     }, 'hello word')
-
     console.log(vnode)
+    render(vnode, document.querySelector('#app'))
 </script>
 
 </html>

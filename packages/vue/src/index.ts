@@ -1,3 +1,4 @@
+export { render } from '@vue/runtime-dom'
 export {
   queuePreFlushCb,
   watch,
