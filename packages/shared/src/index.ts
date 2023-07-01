@@ -16,3 +16,28 @@ export const isString = (val: unknown): val is string => typeof val === 'string'
 export const hasChanged = (newVal: any, oldVal: any): boolean =>
   !Object.is(newVal, oldVal)
 export const extend = Object.assign
+
+const cacheStringFunction = <T extends (str: string) => string>(fn: T): T => {
+  const cache: Record<string, string> = Object.create(null)
+  return ((str: string) => {
+    const hit = cache[str]
+    return hit || (cache[str] = fn(str))
+  }) as any
+}
+
+const hyphenateRE = /\B([A-Z])/g
+/**
+ * 'AbCDFg'.replace(/\B([A-Z])/g, '-$1') ---> 'Ab-C-D-Fg'
+ */
+export const hyphenate = cacheStringFunction((str: string) =>
+  str.replace(hyphenateRE, '-$1').toLowerCase()
+)
+
+const camelizeRE = /-(\w)/g
+export const camelize = cacheStringFunction((str: string): string => {
+  return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ''))
+})
+
+export const capitalize = cacheStringFunction(
+  (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
+)
