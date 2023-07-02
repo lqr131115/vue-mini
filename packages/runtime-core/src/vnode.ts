@@ -20,10 +20,15 @@ export interface VNode {
   props: any
   children: any
   shapeFlag: number
+  key: string | number | symbol | null
 }
 
 export function isVNode(value: any): value is VNode {
   return value ? value.__v_isVNode === true : false
+}
+
+export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
+  return n1.type === n2.type && n1.key === n2.key
 }
 
 export { createBaseVNode as createElementVNode }

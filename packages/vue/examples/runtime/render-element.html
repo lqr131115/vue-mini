@@ -10,26 +10,29 @@
 </head>
 
 <body>
-    <div id="app" style="color: aqua;"></div>
+    <div id="app"></div>
 </body>
 
 <script>
     const { h, render } = Vue
 
-    const vnode = h('div', {
+    const vnode = h('h1', {
         class: [
             'cls1',
-            { 'cls2': true, 'cls3': true }
-        ],
-        style: [
-            "fonxt-weight:bold;font-size:60px",
-            {
-                'color': ['red', 'blue', 'green']
-            }
         ],
     }, 'hello word')
-    console.log(vnode)
+    console.log(vnode);
     render(vnode, document.querySelector('#app'))
+    setTimeout(() => {
+        const vnode1 = h('div', {
+            style: [
+                {
+                    'color': ['red', 'blue']
+                }
+            ],
+        }, 'hello word')
+        render(vnode1, document.querySelector('#app'))
+    }, 1000);
 </script>
 
 </html>
