@@ -149,7 +149,6 @@ export function baseCreateRenderer(options: RendererOptions): any {
     }
 
     if (oldVNode && !isSameVNodeType(oldVNode, newVNode)) {
-      // 卸载之前的
       unmount(oldVNode, true)
       oldVNode = null
     }
@@ -200,7 +199,9 @@ export function baseCreateRenderer(options: RendererOptions): any {
 
   const render = (vnode, container) => {
     if (vnode == null) {
-      // TODO: unmount
+      if (container._vnode) {
+        unmount(container._vnode, true)
+      }
     } else {
       patch(container._vnode || null, vnode, container)
     }
