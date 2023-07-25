@@ -48,6 +48,9 @@ function doWatch(
         cb(newValue, oldValue)
         oldValue = newValue
       }
+    } else {
+      // watchEffect
+      effect.run()
     }
   }
 

@@ -36,6 +36,24 @@
         state.count = 1
     }, 1000)
 
+    // 1. reactive() 返回一个代理对象
+    // 2. computed() 返回一个ComputedRefImpl实例，构造函数中生成一个ReactiveEffect实例, this.effect1
+    // 3. effect() 返回了一个ReactiveEffect实例，effect2，立即执行effect2.run() 因为没有传options
+    // 4. effect2.run 会取cState1.value， 在get Value() 中 trackRefValue ，即收集cState1的依赖 effect2 。由于 _dirty 默认true， 会执行 this.effect1.run(), 即执行getter， 即执行 return 10 + state.count
+    // 5. state.count 触发track，即收集依赖this.effect1
+    // 6. setTimeout 中  state.count = 1 触发trigger， 即执行this.effect1.scheduler
+    // 7. scheduler中执行 triggerRefValue 即触发 effect2。effect2的scheduler为null， 执行effect2.run()，即重复4、5,取新值。依赖收集了但不会增加（Set去重）。后面没有其他赋值操作，就结束了。
+
+
+    // 如果是连续的多次cState1.value， 由于第一次在get Value()中_dirty被设置为false; 后面再进入get Value()， _dirty依旧为false，直接返回缓存 this._value。只有相应的值发生了变化，调用了this.effect1.scheduler， _dirty才会被重新赋值为true。
+    // effect(() => {
+    //     document.querySelector('#app1').innerHTML = cState1.value
+    //     document.querySelector('#app1').innerHTML = cState1.value
+    // })
+
+
+    // triggerEffects中先执行有computed属性的依赖更新，在执行没有computed属性的依赖更新。是因为computed属性上的依赖是 ComputedRefImpl实例 cState1 的依赖。先调用它，执行getter， 触发 state的取值， 执行 state的依赖
+
 </script>
 
 </html>

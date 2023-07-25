@@ -20,16 +20,38 @@
         count: 0
     })
 
+    function log() {
+        console.log(state.count)
+    }
+
     effect(() => {
         console.log(state.count)
     }, {
         scheduler() {
-            queuePreFlushCb(() => console.log(state.count))
+            queuePreFlushCb(log)
         }
     })
 
     state.count = 1
     state.count = 2
+
+    // effect内部 第二个参数options会和 ReactEffect实例做合并，即此处的scheduler()会覆盖到effect实例的scheduler属性上
+    // queuePreFlushCb会将参数cb （如这里的log）用一个队列 pendingPreFlushCbs 存起来， 并调用 queueFlush。
+    // 队列中cb的调用 在flushJobs 进行。 而 queueFlush 会使用一个Promise.then() 将 flushJobs 包装成异步。  包装只做一次， 用 isFlushPending （默认false） 判断是否已经被包装过。
+    // 等同步执行完后， 异步（微任务）执行，即flushJobs 方法执行。该方法对队列中的cb去重，然后遍历调用cb。这样就可以在cb中使用最新的值了。 如这里打印 2
+    // flushJobs中也要恢复isFlushPending默认值，并将队列pendingPreFlushCbs置空
+
+
+    // nextTick 源码  - 将回调推迟到下一个DOM更新周期之后
+    // export function nextTick<T = void>(
+    //     this: T,
+    //     fn?: (this: T) => void
+    // ): Promise<void> {
+    //     const p = currentFlushPromise || resolvedPromise
+    //     return fn ? p.then(this ? fn.bind(this) : fn) : p
+    // }
+
+    //  在 queueFlush 中 currentFlushPromise 被赋值  resolvedPromise.then(flushJobs) , 之后nextTick的fn调用 其实在 resolvedPromise.then(flushJobs).then(fn) 进行的
 
 </script>
 

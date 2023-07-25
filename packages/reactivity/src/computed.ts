@@ -37,7 +37,7 @@ export class ComputedRefImpl<T> {
   private _value!: T
   public readonly effect: ReactiveEffect<T>
 
-  public readonly __is_Ref = true
+  public readonly __v_isRef = true
   public _dirty = true
 
   constructor(

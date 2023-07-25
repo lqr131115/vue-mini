@@ -11,13 +11,19 @@
 
 <body>
     <div id="app1"></div>
+    <div id="app2"></div>
 </body>
 
 <script>
     const { ref, effect } = Vue
     const state = ref(0)
+
     effect(() => {
         document.querySelector('#app1').innerHTML = state.value
+    })
+
+    effect(() => {
+        document.querySelector('#app2').innerHTML = state.value
     })
 
     setTimeout(() => {

@@ -18,6 +18,7 @@ function createSetter() {
     newVal: unknown,
     receiver: object
   ) {
+    // result 是boolean, 表示操作成功或失败。Reflect.set执行完就可以拿到最新值了。
     const result = Reflect.set(target, key, newVal, receiver)
     trigger(target, key, newVal)
     return result

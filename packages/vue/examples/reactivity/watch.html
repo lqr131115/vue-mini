@@ -20,17 +20,35 @@
         count: 0
     })
 
-    const count = ref(0)
+    // watch(count, (newVal, oldVal) => {
+    //     console.log('count newVal', newVal)
+    //     console.log('count oldVal', oldVal)
+    // }, { immediate: true })
 
-    watch(count, (newVal, oldVal) => {
-        console.log('oldVal', oldVal)
-        console.log('newVal', newVal)
-    }, { immediate: true })
+
+    // watch(state, (newVal, oldVal) => {
+    //     console.log('state newVal', newVal)
+    //     console.log('state oldVal', oldVal)
+    // }, { immediate: true })
+
+
+    watch(state, (newVal, oldVal) => {
+        console.log('state newVal', newVal)
+        console.log('state oldVal', oldVal)
+    })
+
 
     setTimeout(() => {
         state.count = 1
-        count.value = 1
     }, 0)
+
+
+    // watch 接受3个参数，source，cb（watch的cb必传），options，内部调用doWatch(source,cb, options)
+    // 根据source类型去构建getter（取值）， 如果类型是 reactive，默认开启deep。 如果deep开启，会用traverse包裹getter，返回一个新getter。traverse会递归取值，触发每个属性的依赖收集
+    // 实例化一个ReactEffect类实例，即依赖，传入getter和scheduler。scheduler 返回  queuePreFlushCb(job)。 queuePreFlushCb 来自 scheduler.ts
+    // job 会执行 effect.run, 即getter（依赖收集）取newVal， 和oldVal一起传入cb，并调用cb
+    // 如果开启immediate，直接调用job；如果没有，调用effect.run 取值 （依赖收集）
+
 
 </script>
 
