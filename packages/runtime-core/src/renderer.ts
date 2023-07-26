@@ -93,14 +93,14 @@ export function baseCreateRenderer(options: RendererOptions): any {
       }
     } else {
       if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
-        /**
-         * new children is array
-         * old children is array
-         */
         if (shapeFlag & shapeFlag.ARRAY_CHILDREN) {
+          /**
+           * new children is array
+           * old children is array
+           */
         } else {
           /**
-           * new children is text or null
+           * new children is null
            * old children is array
            */
         }

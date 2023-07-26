@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>render-element-update-different-vnode</title>
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+
+<script>
+    const { h, render } = Vue
+    const ele = document.querySelector('#app')
+    const vnode = h('h1', {
+        class: [
+            'cls1',
+        ],
+    }, 'hello word')
+    render(vnode, ele)
+    setTimeout(() => {
+        const vnode1 = h('div', {
+            style: [
+                {
+                    'color': ['red', 'blue']
+                }
+            ],
+        }, 'hello word')
+        render(vnode1, ele)
+    }, 1000);
+</script>
+
+</html>

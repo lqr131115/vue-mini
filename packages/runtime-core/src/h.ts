@@ -12,11 +12,14 @@ export function h(type: any, propsOrChildren?: null, children?: any): VNode {
   const l = arguments.length
   if (l === 2) {
     if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
+      // single vnode without props
       if (isVNode(propsOrChildren)) {
         return createVNode(type, null, [propsOrChildren])
       }
+      // props without children
       return createVNode(type, propsOrChildren)
     } else {
+      // omit props
       return createVNode(type, null, propsOrChildren)
     }
   } else {

@@ -16,12 +16,26 @@
 <script>
     const { h, render } = Vue
 
-    const vnode = h('h1', {
-        class: 'cls1',
+    const vnode = h('div', {
+        style: [
+            "font-weight:bold;font-size:20px",
+            {
+                'color': 'blue'
+            }
+        ],
+        class: [
+            'cls1',
+            { 'cls2': true, 'cls3': true }
+        ],
         type: 'text',
         'v-show': 'v-show',
     }, 'hello word')
     render(vnode, document.querySelector('#app'))
+
+    // h 函数 - 返回VNode 
+    // 1. 处理参数  2.标准化props中的style和class  3. 定义VNode  4. 标准化Children (shapeFlag或运算) 5. 返回VNode
+
+    // render函数 - 
 </script>
 
 </html>

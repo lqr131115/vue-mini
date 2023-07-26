@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>render-element-update</title>
+    <title>render-element-update-same-vnode</title>
     <script src="../../dist/vue.js"></script>
 </head>
 
@@ -15,14 +15,13 @@
 
 <script>
     const { h, render } = Vue
-
-    const vnode = h('h1', {
+    const ele = document.querySelector('#app')
+    const vnode = h('div', {
         class: [
             'cls1',
         ],
     }, 'hello word')
-    console.log(vnode);
-    render(vnode, document.querySelector('#app'))
+    render(vnode, ele)
     setTimeout(() => {
         const vnode1 = h('div', {
             style: [
@@ -31,7 +30,7 @@
                 }
             ],
         }, 'hello word')
-        render(vnode1, document.querySelector('#app'))
+        render(vnode1, ele)
     }, 1000);
 </script>
 
