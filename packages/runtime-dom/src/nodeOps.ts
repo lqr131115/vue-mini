@@ -14,6 +14,9 @@ export const nodeOps = {
     const el = doc.createElement(tag)
     return el
   },
+  setText: (node, text) => {
+    node.nodeValue = text
+  },
   createText: text => doc.createTextNode(text),
   createComment: text => doc.createComment(text),
   setElementText: (el: Element, text) => {

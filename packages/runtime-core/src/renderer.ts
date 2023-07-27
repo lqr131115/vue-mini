@@ -4,7 +4,9 @@ import { Text, Comment, Fragment, isSameVNodeType } from './vnode'
 export interface RendererOptions {
   insert(el: Element, parent: Element, anchor?: null): void
   remove(el: Element): void
+  setText(el: Element, text: string): void
   setElementText(el: Element, text: string): void
+  createText(text: string): any
   createElement(type: string): Element
   patchProp(el: Element, key: string, prevValue: any, nextValue: any): void
 }
@@ -17,8 +19,10 @@ export function baseCreateRenderer(options: RendererOptions): any {
   const {
     insert: hostInsert,
     remove: hostRemove,
-    createElement: hostCreateElement,
+    setText: hostSetText,
     setElementText: hostSetElementText,
+    createText: hostCreateText,
+    createElement: hostCreateElement,
     patchProp: hostPatchProp
   } = options
 
@@ -30,7 +34,20 @@ export function baseCreateRenderer(options: RendererOptions): any {
     }
   }
 
-  const processText = () => {}
+  const processText = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      hostInsert(
+        (newVNode.el = hostCreateText(newVNode.children as string)),
+        container,
+        anchor
+      )
+    } else {
+      const el = (newVNode.el = oldVNode.el!)
+      if (newVNode.children !== oldVNode.children) {
+        hostSetText(el, newVNode.children as string)
+      }
+    }
+  }
 
   const processCommentNode = () => {}
 
@@ -156,7 +173,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
     const { type, shapeFlag } = newVNode
     switch (type) {
       case Text:
-        processText()
+        processText(oldVNode, newVNode, container, anchor)
         break
       case Comment:
         processCommentNode()

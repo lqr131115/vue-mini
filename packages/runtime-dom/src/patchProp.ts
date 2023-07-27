@@ -5,7 +5,7 @@ import { patchAttr } from './modules/arrts'
 import { patchDomProp } from './modules/props'
 import { patchEvent } from './modules/events'
 
-export const patchProp = (el: Element, key, prevValue, nextValue) => {
+export const patchProp = (el, key, prevValue, nextValue) => {
   if (key === 'class') {
     patchClass(el, nextValue)
   } else if (key === 'style') {
@@ -27,7 +27,7 @@ export const patchProp = (el: Element, key, prevValue, nextValue) => {
   }
 }
 
-function shouldSetAsProp(el: Element, key: string, value: unknown) {
+function shouldSetAsProp(el, key: string, value: unknown) {
   //  <input list> must be set as attribute
   if (key === 'list' && el.tagName === 'INPUT') {
     return false
