@@ -35,7 +35,13 @@
     // h 函数 - 返回VNode 
     // 1. 处理参数  2.标准化props中的style和class  3. 定义VNode  4. 标准化Children (shapeFlag或运算) 5. 返回VNode
 
-    // render函数 - 
+    // render函数 - vnode渲染真实dom
+    // 1. 接受vnode和el ,vnode会挂载在el的_vnode属性上作为oldVnode；如果vnode为空 ，unmount； 如果vnode不为空， patch。 patch的oldVnode取自el._vnode， newVnode即传入的vnode
+    // 2. patch中， 如果oldVnode等于newVnode，直接返回；如果oldVnode不为空， 和newVnode也不是同一个vnode， 卸载oldVnode，且oldVnode要重置为null。然后根据newVnode的shapeFlag作进一步操作
+    // 3. 如果shapeFlag是Element， 则调用processElement。其中，如果oldVnode为空，mountElement 挂载 newVnode （前面将oldVnode重置为null，就可以走挂载newVnode的逻辑了）；否则，patchElement
+    // 4. patchElement主要作patchChildren和patchProps. patchChildren是根据oldVnode和newVnode的children类型作进一步处理（如oldChildren是array，newChildren是text，会删除所有老的子节点，渲染新的文本节点 ）
+    //    而patchProps就是将style、class、events等信息更新到el节点上。如 patchStyle会将class指定的类名样式挂到el上，通过el.className
+
 </script>
 
 </html>

@@ -1,8 +1,9 @@
-import { isOn } from '@vue/shared'
+import { isOn, isModelListener } from '@vue/shared'
 import { patchClass } from './modules/class'
 import { patchStyle } from './modules/style'
 import { patchAttr } from './modules/arrts'
 import { patchDomProp } from './modules/props'
+import { patchEvent } from './modules/events'
 
 export const patchProp = (el: Element, key, prevValue, nextValue) => {
   if (key === 'class') {
@@ -10,6 +11,9 @@ export const patchProp = (el: Element, key, prevValue, nextValue) => {
   } else if (key === 'style') {
     patchStyle(el, prevValue, nextValue)
   } else if (isOn(key)) {
+    if (!isModelListener(key)) {
+      patchEvent(el, key, prevValue, nextValue)
+    }
   } else if (
     key[0] === '.'
       ? ((key = key.slice(1)), true)

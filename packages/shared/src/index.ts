@@ -10,6 +10,8 @@ export const NOOP = () => {}
 const onRE = /^on[^a-z]/
 export const isOn = (key: string) => onRE.test(key)
 
+export const isModelListener = (key: string) => key.startsWith('onUpdate:')
+
 export const isArray = Array.isArray
 export const isObject = (val: unknown): val is object =>
   val !== null && typeof val === 'object'

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>render-element-event</title>
+    <script src="../../dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="app"></div>
+</body>
+
+<script>
+    const { h, render } = Vue
+    const app = document.querySelector('#app')
+
+    const vnode = h('button', {
+        onClick() {
+            alert`点击了`
+        }
+    }, '点击我')
+    render(vnode, app)
+
+    setTimeout(() => {
+        const vnode1 = h('button', {
+            onDblclick() {
+                alert`双击了`
+            }
+        }, '双击我')
+        render(vnode1, app)
+    }, 1000);
+
+</script>
+
+</html>
