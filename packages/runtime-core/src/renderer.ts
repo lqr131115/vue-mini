@@ -4,10 +4,11 @@ import { Text, Comment, Fragment, isSameVNodeType } from './vnode'
 export interface RendererOptions {
   insert(el: Element, parent: Element, anchor?: null): void
   remove(el: Element): void
-  setText(el: Element, text: string): void
-  setElementText(el: Element, text: string): void
   createText(text: string): any
+  setText(el: Element, text: string): void
   createElement(type: string): Element
+  setElementText(el: Element, text: string): void
+  createComment(text: string): any
   patchProp(el: Element, key: string, prevValue: any, nextValue: any): void
 }
 
@@ -19,10 +20,11 @@ export function baseCreateRenderer(options: RendererOptions): any {
   const {
     insert: hostInsert,
     remove: hostRemove,
-    setText: hostSetText,
-    setElementText: hostSetElementText,
-    createText: hostCreateText,
     createElement: hostCreateElement,
+    setElementText: hostSetElementText,
+    setText: hostSetText,
+    createText: hostCreateText,
+    createComment: hostCreateComment,
     patchProp: hostPatchProp
   } = options
 
@@ -42,14 +44,24 @@ export function baseCreateRenderer(options: RendererOptions): any {
         anchor
       )
     } else {
-      const el = (newVNode.el = oldVNode.el!)
+      const el = (oldVNode.el = newVNode.el!)
       if (newVNode.children !== oldVNode.children) {
         hostSetText(el, newVNode.children as string)
       }
     }
   }
 
-  const processCommentNode = () => {}
+  const processCommentNode = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      hostInsert(
+        (newVNode.el = hostCreateComment(newVNode.children as string)),
+        container,
+        anchor
+      )
+    } else {
+      oldVNode.el = newVNode.el!
+    }
+  }
 
   const processFragment = () => {}
 
@@ -176,7 +188,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
         processText(oldVNode, newVNode, container, anchor)
         break
       case Comment:
-        processCommentNode()
+        processCommentNode(oldVNode, newVNode, container, anchor)
         break
       case Fragment:
         processFragment()
