@@ -273,7 +273,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
     const { shapeFlag } = vnode
 
     if (shapeFlag & ShapeFlags.COMPONENT) {
-      // unmountComponent
+      unmountComponent(vnode.component!, doRemove)
     } else {
       if (doRemove) {
         remove(vnode)
@@ -283,12 +283,17 @@ export function baseCreateRenderer(options: RendererOptions): any {
 
   const remove = vnode => {
     const { el } = vnode
-
     const performRemove = () => {
       hostRemove(el!)
     }
-
     performRemove()
+  }
+
+  const unmountComponent = (instance, doRemove) => {
+    const { update, subTree } = instance
+    if (update) {
+      unmount(subTree, doRemove)
+    }
   }
 
   const render = (vnode, container) => {

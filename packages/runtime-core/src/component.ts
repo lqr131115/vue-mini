@@ -8,6 +8,7 @@ export function createComponentInstance(vnode: VNode) {
     uid: uid++,
     vnode,
     type,
+    render: null,
     subTree: null,
     effect: null,
     update: null
