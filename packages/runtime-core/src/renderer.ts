@@ -1,5 +1,15 @@
-import { EMPTY_OBJ, ShapeFlags } from '@vue/shared'
-import { Text, Comment, Fragment, isSameVNodeType } from './vnode'
+import { EMPTY_OBJ, ShapeFlags, isString } from '@vue/shared'
+import {
+  Text,
+  Comment,
+  Fragment,
+  isSameVNodeType,
+  normalizeVNode
+} from './vnode'
+import { createComponentInstance, setupComponent } from './component'
+import { ReactiveEffect } from 'packages/reactivity/src/effect'
+import { queuePreFlushCb } from './scheduler'
+import { renderComponentRoot } from './componentRenderUtils'
 
 export interface RendererOptions {
   insert(el: Element, parent: Element, anchor?: null): void
@@ -63,8 +73,52 @@ export function baseCreateRenderer(options: RendererOptions): any {
     }
   }
 
-  const processFragment = () => {}
+  const processFragment = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      mountChildren(newVNode.children, container, anchor)
+    } else {
+      patchChildren(oldVNode, newVNode, container, anchor)
+    }
+  }
 
+  const processComponent = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      mountComponent(newVNode, container, anchor)
+    } else {
+      updateComponent(oldVNode, newVNode)
+    }
+  }
+
+  const mountComponent = (initialVNode, container, anchor) => {
+    const instance = (initialVNode.component =
+      createComponentInstance(initialVNode))
+
+    // 绑定 instance.render
+    setupComponent(instance)
+
+    setupRenderEffect(instance, initialVNode, container, anchor)
+  }
+
+  const setupRenderEffect = (instance, initialVNode, container, anchor) => {
+    const componentUpdateFn = () => {
+      if (!instance.isMounted) {
+        const subTree = (instance.subTree = renderComponentRoot(instance))
+
+        patch(null, subTree, container, anchor)
+
+        initialVNode.el = subTree.el
+      } else {
+      }
+    }
+
+    const update = (instance.update = () => effect.run())
+
+    const effect = new ReactiveEffect(componentUpdateFn, () =>
+      queuePreFlushCb(update)
+    )
+    update()
+  }
+  const updateComponent = (oldVNode, newVNode) => {}
   const mountElement = (vnode, container, anchor) => {
     const { type, props, shapeFlag } = vnode
 
@@ -86,6 +140,16 @@ export function baseCreateRenderer(options: RendererOptions): any {
 
     // 3. 插入
     hostInsert(el, container, anchor)
+  }
+
+  const mountChildren = (children, container, anchor) => {
+    if (isString(children)) {
+      children = children.split('')
+    }
+    for (let i = 0; i < children.length; i++) {
+      const child = (children[i] = normalizeVNode(children[i]))
+      patch(null, child, container, anchor)
+    }
   }
 
   const patchElement = (oldVNode, newVNode) => {
@@ -191,12 +255,13 @@ export function baseCreateRenderer(options: RendererOptions): any {
         processCommentNode(oldVNode, newVNode, container, anchor)
         break
       case Fragment:
-        processFragment()
+        processFragment(oldVNode, newVNode, container, anchor)
         break
       default:
         if (shapeFlag & ShapeFlags.ELEMENT) {
           processElement(oldVNode, newVNode, container, anchor)
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
+          processComponent(oldVNode, newVNode, container, anchor)
         } else {
           console.warn('Invalid VNode type:', type, `(${typeof type})`)
         }

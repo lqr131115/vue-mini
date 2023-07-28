@@ -98,3 +98,15 @@ function normalizeChildren(vnode: VNode, children: unknown) {
   vnode.children = children
   vnode.shapeFlag |= type
 }
+
+export function normalizeVNode(child: any): VNode {
+  if (typeof child === 'object') {
+    return cloneIfMounted(child)
+  } else {
+    return createVNode(Text, null, String(child))
+  }
+}
+
+export function cloneIfMounted(child) {
+  return child
+}
