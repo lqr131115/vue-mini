@@ -1,5 +1,6 @@
 import { NOOP } from '@vue/shared'
 import { VNode } from './vnode'
+import { applyOptions } from './componentOptions'
 
 let uid = 0
 export function createComponentInstance(vnode: VNode) {
@@ -37,4 +38,6 @@ export function finishComponentSetup(instance) {
   if (!instance.render) {
     instance.render = Component.render || NOOP
   }
+
+  applyOptions(instance)
 }

@@ -90,12 +90,14 @@ export function baseCreateRenderer(options: RendererOptions): any {
   }
 
   const mountComponent = (initialVNode, container, anchor) => {
-    const instance = (initialVNode.component =
-      createComponentInstance(initialVNode))
+    // vnode绑定component (instance)
+    initialVNode.component = createComponentInstance(initialVNode)
+    const instance = initialVNode.component
 
-    // 绑定 instance.render
+    // instance绑定render、data等
     setupComponent(instance)
 
+    // 生成subTree 并 patch
     setupRenderEffect(instance, initialVNode, container, anchor)
   }
 
