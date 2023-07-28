@@ -1,4 +1,4 @@
-import { NOOP } from '@vue/shared'
+import { NOOP, isFunction } from '@vue/shared'
 import { VNode } from './vnode'
 import { applyOptions } from './componentOptions'
 
@@ -31,9 +31,18 @@ function setupStatefulComponent(instance) {
   const { setup } = Component
 
   if (setup) {
+    const setupResult = setup()
+    handleSetupResult(instance, setupResult)
   } else {
     finishComponentSetup(instance)
   }
+}
+
+export function handleSetupResult(instance, setupResult) {
+  if (isFunction(setupResult)) {
+    instance.render = setupResult
+  }
+  finishComponentSetup(instance)
 }
 
 export function finishComponentSetup(instance) {

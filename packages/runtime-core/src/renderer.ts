@@ -106,6 +106,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
       if (!instance.isMounted) {
         const { bm, m } = instance
 
+        // 这bm只能是Function类型, vue3中也支持Function[]. 其他生命周期hook同理
         if (bm) {
           bm()
         }
@@ -118,7 +119,28 @@ export function baseCreateRenderer(options: RendererOptions): any {
         }
 
         initialVNode.el = subTree.el
+        instance.isMounted = true
       } else {
+        let { next, vnode, bu, u } = instance
+        if (!next) {
+          next = vnode
+        }
+
+        if (bu) {
+          bu()
+        }
+
+        const nextTree = renderComponentRoot(instance)
+        const prevTree = instance.subTree
+        instance.subTree = nextTree
+
+        patch(prevTree, nextTree, container, anchor)
+
+        if (u) {
+          u()
+        }
+
+        next.el = nextTree.el
       }
     }
 

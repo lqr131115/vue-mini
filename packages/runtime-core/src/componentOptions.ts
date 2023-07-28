@@ -1,7 +1,12 @@
 import { reactive } from '@vue/reactivity'
 import { LifecycleHooks } from './component'
 import { isArray } from '@vue/shared'
-import { onBeforeMount, onMounted } from './apiLifecycle'
+import {
+  onBeforeMount,
+  onBeforeUpdate,
+  onMounted,
+  onUpdated
+} from './apiLifecycle'
 
 export function applyOptions(instance: any) {
   const options = resolveMergedOptions(instance)
@@ -10,7 +15,14 @@ export function applyOptions(instance: any) {
     callHook(options.beforeCreate, instance, LifecycleHooks.BEFORE_CREATE)
   }
 
-  const { data: dataOptions, created, beforeMount, mounted } = options
+  const {
+    data: dataOptions,
+    created,
+    beforeMount,
+    mounted,
+    beforeUpdate,
+    updated
+  } = options
   if (dataOptions) {
     const data = dataOptions()
     instance.data = reactive(data)
@@ -25,18 +37,20 @@ export function applyOptions(instance: any) {
     hook?: Function | Function[]
   ) {
     if (isArray(hook)) {
-      hook.forEach(_hook => register(_hook, instance))
+      hook.forEach(_hook => register(_hook.bind(instance.data), instance))
     } else if (hook) {
-      register(hook, instance)
+      register(hook.bind(instance.data), instance)
     }
   }
 
   registerLifecycleHook(onBeforeMount, beforeMount)
   registerLifecycleHook(onMounted, mounted)
+  registerLifecycleHook(onBeforeUpdate, beforeUpdate)
+  registerLifecycleHook(onUpdated, updated)
 }
 
 function callHook(hook: Function, instance: any, type: LifecycleHooks) {
-  hook()
+  hook.bind(instance.data)()
 }
 
 export function resolveMergedOptions(instance: any) {
