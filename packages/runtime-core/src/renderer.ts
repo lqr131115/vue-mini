@@ -104,9 +104,18 @@ export function baseCreateRenderer(options: RendererOptions): any {
   const setupRenderEffect = (instance, initialVNode, container, anchor) => {
     const componentUpdateFn = () => {
       if (!instance.isMounted) {
+        const { bm, m } = instance
+
+        if (bm) {
+          bm()
+        }
         const subTree = (instance.subTree = renderComponentRoot(instance))
 
         patch(null, subTree, container, anchor)
+
+        if (m) {
+          m()
+        }
 
         initialVNode.el = subTree.el
       } else {
