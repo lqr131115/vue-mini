@@ -107,7 +107,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
       if (!instance.isMounted) {
         const { bm, m } = instance
 
-        // 这bm只能是Function类型, vue3中也支持Function[]. 其他生命周期hook同理
+        // 这里简单实现，bm只能是Function类型, vue3源码中也可以是支持Function[]. 其他生命周期hook同理
         if (bm) {
           bm()
         }
@@ -324,7 +324,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
       const oldStartIndex = i // prev starting index
       const newStartIndex = i // next starting index
 
-      // 5.1 build key:index map for newChildren
+      // 5.1 为newChildren创建 key: index 映射
       const keyToNewIndexMap: Map<string | number | symbol, number> = new Map()
       for (i = newStartIndex; i <= newChildrenEnd; i++) {
         const nextChild = normalizeVNode(newChildren[i])
@@ -333,8 +333,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
         }
       }
 
-      // 5.2 loop through old children left to be patched and try to patch
-      // matching nodes & remove nodes that are no longer present
+      // 5.2 循环遍历oldChildren 尝试修复匹配节点和删除不能存在的节点
       let j
       let patched = 0
       const toBePatched = newChildrenEnd - newStartIndex + 1
@@ -385,13 +384,15 @@ export function baseCreateRenderer(options: RendererOptions): any {
         }
       }
 
-      // 5.3 move and mount
+      // 5.3 移动和挂载
       // generate longest stable subsequence only when nodes have moved
+      // 仅当节点移动时生成最长稳定子序列
       const increasingNewIndexSequence = moved
         ? getSequence(newIndexToOldIndexMap)
         : EMPTY_ARR
       j = increasingNewIndexSequence.length - 1
       // looping backwards so that we can use last patched node as anchor
+      // 向后循环，以便我们可以使用最后修补的节点作为锚点
       for (i = toBePatched - 1; i >= 0; i--) {
         const nextIndex = newStartIndex + i
         const nextChild = newChildren[nextIndex]
