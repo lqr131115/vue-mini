@@ -377,7 +377,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
           if (newIndex >= maxNewIndexSoFar) {
             maxNewIndexSoFar = newIndex
           } else {
-            moved = true
+            moved = true  
           }
           patch(prevChild, newChildren[newIndex], container, null)
           patched++
