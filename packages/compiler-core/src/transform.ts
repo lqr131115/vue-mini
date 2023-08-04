@@ -1,5 +1,6 @@
 import { isString } from '@vue/shared'
 import { NodeTypes } from './ast'
+import { isSingleElementRoot } from './hoistStatic'
 
 export interface TransformContext {
   root: object
@@ -16,6 +17,29 @@ export interface TransformContext {
 export function transform(root, options) {
   const context = createTransformContext(root, options)
   traverseNode(root, context)
+  createRootCodegen(root)
+
+  root.helpers = [...context.helpers.keys()]
+  root.components = []
+  root.directives = []
+  root.imports = []
+  root.hoists = []
+  root.temps = 0
+  root.cached = 0
+}
+
+function createRootCodegen(root) {
+  const { children } = root
+  if (children.length === 1) {
+    const child = children[0]
+    if (isSingleElementRoot(root, child) && child.codegenNode) {
+      root.codegenNode = child.codegenNode
+    }
+  } else if (children.length > 1) {
+    // TODO: vue3 多个根节点
+  } else {
+    // no children = noop. codegen will return null.
+  }
 }
 
 export function createTransformContext(root, { nodeTransforms = [] }) {
