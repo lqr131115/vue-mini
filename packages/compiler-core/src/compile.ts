@@ -1,5 +1,5 @@
 import { extend } from '@vue/shared'
-import { CodegenResult } from './codegen'
+import { CodegenResult, generate } from './codegen'
 import { baseParse } from './parse'
 import { transform } from './transform'
 import { transformElement } from './transforms/transformElement'
@@ -7,7 +7,6 @@ import { transformText } from './transforms/transformText'
 
 export function baseCompile(template: string, options = {}): CodegenResult {
   const ast = baseParse(template)
-  console.log(ast)
 
   const [nodeTransforms] = getBaseTransformPreset()
   transform(
@@ -17,11 +16,7 @@ export function baseCompile(template: string, options = {}): CodegenResult {
     })
   )
 
-  // generate
-
-  return {
-    ast
-  }
+  return generate(ast)
 }
 
 export function getBaseTransformPreset() {

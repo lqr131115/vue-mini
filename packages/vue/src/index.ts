@@ -22,6 +22,7 @@ function compileToFunction(template: string, options?: any) {
 
   const { code } = compile(template, options)
 
+  console.log(code)
   const render = new Function(code!)()
 
   return (compileCache[key] = render)

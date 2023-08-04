@@ -1,4 +1,4 @@
-import { isString } from '@vue/shared'
+import { isArray, isString } from '@vue/shared'
 import { NodeTypes } from './ast'
 import { isSingleElementRoot } from './hoistStatic'
 
@@ -66,16 +66,21 @@ export function traverseNode(node, context: TransformContext) {
   for (let i = 0; i < nodeTransforms.length; i++) {
     const onExit = nodeTransforms[i](node, context)
     if (onExit) {
-      exitFns.push(onExit)
+      if (isArray(onExit)) {
+        exitFns.push(...onExit)
+      } else {
+        exitFns.push(onExit)
+      }
     }
-    if (!context.currentNode) {
-      // node was removed
-      return
-    } else {
-      // node may have been replaced
-      node = context.currentNode
-    }
+    // if (!context.currentNode) {
+    //   // node was removed
+    //   return
+    // } else {
+    //   // node may have been replaced
+    //   node = context.currentNode
+    // }
   }
+
   switch (node.type) {
     case NodeTypes.COMMENT:
       // TODO
@@ -93,6 +98,8 @@ export function traverseNode(node, context: TransformContext) {
   // 深度优先 从后往前?
   let i = exitFns.length
   while (i--) {
+    console.log(i)
+
     exitFns[i]()
   }
 }

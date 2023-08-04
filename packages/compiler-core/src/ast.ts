@@ -1,3 +1,5 @@
+import { CREATE_ELEMENT_VNODE } from './runtimeHelpers'
+
 export const enum NodeTypes {
   ROOT,
   ELEMENT,
@@ -49,7 +51,8 @@ export function createRoot(children, loc = {}) {
 
 export function createVNodeCall(context, tag, props?, children?) {
   if (context) {
-    context.helper()
+    // context.helper(getVNodeHelper(context.inSSR, false))
+    context.helper(CREATE_ELEMENT_VNODE)
   }
 
   return {
