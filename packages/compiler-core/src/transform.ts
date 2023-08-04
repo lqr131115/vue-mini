@@ -98,8 +98,6 @@ export function traverseNode(node, context: TransformContext) {
   // 深度优先 从后往前?
   let i = exitFns.length
   while (i--) {
-    console.log(i)
-
     exitFns[i]()
   }
 }
