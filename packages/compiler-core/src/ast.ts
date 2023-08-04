@@ -46,3 +46,24 @@ export function createRoot(children, loc = {}) {
     loc
   }
 }
+
+export function createVNodeCall(context, tag, props?, children?) {
+  if (context) {
+    context.helper()
+  }
+
+  return {
+    type: NodeTypes.VNODE_CALL,
+    tag,
+    props,
+    children
+  }
+}
+
+export function createCompoundExpression(children, loc) {
+  return {
+    type: NodeTypes.COMPOUND_EXPRESSION,
+    loc,
+    children
+  }
+}

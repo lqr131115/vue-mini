@@ -44,6 +44,13 @@ export function traverseNode(node, context: TransformContext) {
     if (onExit) {
       exitFns.push(onExit)
     }
+    if (!context.currentNode) {
+      // node was removed
+      return
+    } else {
+      // node may have been replaced
+      node = context.currentNode
+    }
   }
   switch (node.type) {
     case NodeTypes.COMMENT:
@@ -58,6 +65,8 @@ export function traverseNode(node, context: TransformContext) {
   }
 
   context.currentNode = node
+
+  // 深度优先 从后往前?
   let i = exitFns.length
   while (i--) {
     exitFns[i]()

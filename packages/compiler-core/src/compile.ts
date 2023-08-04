@@ -7,6 +7,7 @@ import { transformText } from './transforms/transformText'
 
 export function baseCompile(template: string, options = {}): CodegenResult {
   const ast = baseParse(template)
+  console.log(ast)
 
   const [nodeTransforms] = getBaseTransformPreset()
   transform(
@@ -15,7 +16,9 @@ export function baseCompile(template: string, options = {}): CodegenResult {
       nodeTransforms: [...nodeTransforms]
     })
   )
+
   // generate
+
   return {
     ast
   }
