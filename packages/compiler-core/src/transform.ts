@@ -1,6 +1,7 @@
 import { isArray, isString } from '@vue/shared'
 import { NodeTypes } from './ast'
 import { isSingleElementRoot } from './hoistStatic'
+import { TO_DISPLAY_STRING } from './runtimeHelpers'
 
 export interface TransformContext {
   root: object
@@ -82,8 +83,8 @@ export function traverseNode(node, context: TransformContext) {
   }
 
   switch (node.type) {
-    case NodeTypes.COMMENT:
-      // TODO
+    case NodeTypes.INTERPOLATION:
+      context.helper(TO_DISPLAY_STRING)
       break
     case NodeTypes.IF_BRANCH:
     case NodeTypes.FOR:

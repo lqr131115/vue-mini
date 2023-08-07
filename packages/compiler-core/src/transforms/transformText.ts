@@ -27,7 +27,7 @@ export const transformText = (node, context) => {
                   child.loc
                 )
 
-                currentContainer.children.push(` + `, child)
+                currentContainer.children.push(` + `, next)
                 children.splice(j, 1)
                 j--
               }
