@@ -119,6 +119,9 @@ function parseTag(context: ParserContext, type: TagType) {
   const tag = match[1]
 
   advanceBy(context, match[0].length)
+  advanceSpaces(context)
+
+  let props = parseAttributes(context, type)
 
   let isSelfClosing = startsWith(context.source, '/>')
 
@@ -135,8 +138,129 @@ function parseTag(context: ParserContext, type: TagType) {
     tag,
     tagType,
     isSelfClosing,
-    props: [],
+    props,
     children: []
+  }
+}
+
+function parseAttributes(context: ParserContext, type: TagType) {
+  const props: any[] = []
+  const attributeName = new Set<string>()
+  while (
+    context.source.length > 0 &&
+    !startsWith(context.source, '>') &&
+    !startsWith(context.source, '/>')
+  ) {
+    const attr = parseAttribute(context, attributeName)
+
+    // Trim whitespace between class
+    if (
+      attr.type === NodeTypes.ATTRIBUTE &&
+      attr.value &&
+      attr.name === 'class'
+    ) {
+      attr.value.content = attr.value.content.replace(/\s+/g, ' ').trim()
+    }
+
+    if (type === TagType.Start) {
+      props.push(attr)
+    }
+
+    advanceSpaces(context)
+  }
+  return props
+}
+
+function parseAttribute(context: ParserContext, nameSet: Set<string>) {
+  const match = /^[^\t\r\n\f />][^\t\r\n\f />=]*/.exec(context.source)!
+  const name = match[0]
+
+  // if (nameSet.has(name)) {
+  //   console.error('Duplicate attribute.')
+  // }
+
+  nameSet.add(name)
+
+  advanceBy(context, name.length)
+
+  let value: any = undefined
+
+  if (/^[\t\r\n\f ]*=/.test(context.source)) {
+    advanceSpaces(context)
+    advanceBy(context, 1)
+    advanceSpaces(context)
+    value = parseAttributeValue(context)
+  }
+
+  if (/^(v-[A-Za-z0-9-]|:|\.|@|#)/.test(name)) {
+    const match =
+      /(?:^v-([a-z0-9-]+))?(?:(?::|^\.|^@|^#)(\[[^\]]+\]|[^\.]+))?(.+)?$/i.exec(
+        name
+      )!
+
+    let dirName = match[1]
+
+    // TODO
+    let arg = undefined
+
+    // TODO
+    const modifiers = []
+
+    return {
+      type: NodeTypes.DIRECTIVE,
+      name: dirName,
+      exp: value && {
+        type: NodeTypes.SIMPLE_EXPRESSION,
+        content: value.content,
+        isStatic: false,
+        loc: value.loc
+      },
+      arg,
+      modifiers,
+      loc: {}
+    }
+  }
+
+  return {
+    type: NodeTypes.ATTRIBUTE,
+    name,
+    value: value && {
+      type: NodeTypes.TEXT,
+      content: value.content,
+      loc: {}
+    },
+    loc: {}
+  }
+}
+
+function parseAttributeValue(context: ParserContext) {
+  let content: string = ''
+  const quote = context.source[0]
+  const isQuoted = quote === `"` || quote === `'`
+  if (isQuoted) {
+    advanceBy(context, 1)
+    const endIndex = context.source.indexOf(quote)
+    if (endIndex === -1) {
+      content = parseTextData(context, context.source.length)
+    } else {
+      content = parseTextData(context, endIndex)
+      advanceBy(context, 1)
+    }
+  } else {
+    // TODO: Unquoted
+  }
+
+  return {
+    content,
+    isQuoted,
+    loc: {}
+  }
+}
+
+function advanceSpaces(context: ParserContext) {
+  const match = /^[\t\r\n\f ]+/.exec(context.source)
+  if (match) {
+    advanceBy(context, match[0].length)
   }
 }
 
