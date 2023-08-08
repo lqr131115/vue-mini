@@ -1,7 +1,8 @@
 import { isArray, isString } from '@vue/shared'
-import { NodeTypes } from './ast'
+import { ElementTypes, NodeTypes } from './ast'
 import { isSingleElementRoot } from './hoistStatic'
 import { TO_DISPLAY_STRING } from './runtimeHelpers'
+import { isVSlot } from './utils'
 
 export interface TransformContext {
   root: object
@@ -11,6 +12,7 @@ export interface TransformContext {
   nodeTransforms: any[]
   helpers: Map<symbol, number>
   helper<T extends symbol>(name: T)
+  replaceNode(node: any): void
 }
 
 //  1. 深度优先排序  孙 -> 子 -> 父
@@ -55,6 +57,9 @@ export function createTransformContext(root, { nodeTransforms = [] }) {
       const count = context.helpers.get(name) || 0
       context.helpers.set(name, count + 1)
       return name
+    },
+    replaceNode(node) {
+      context.parent!.children[context.childIndex] = context.currentNode = node
     }
   }
   return context
@@ -73,19 +78,24 @@ export function traverseNode(node, context: TransformContext) {
         exitFns.push(onExit)
       }
     }
-    // if (!context.currentNode) {
-    //   // node was removed
-    //   return
-    // } else {
-    //   // node may have been replaced
-    //   node = context.currentNode
-    // }
+    if (!context.currentNode) {
+      // node was removed
+      return
+    } else {
+      // node may have been replaced
+      node = context.currentNode
+    }
   }
 
   switch (node.type) {
     case NodeTypes.INTERPOLATION:
       context.helper(TO_DISPLAY_STRING)
       break
+    // case NodeTypes.IF:
+    //   for (let i = 0; i < node.branches.length; i++) {
+    //     traverseNode(node.branches[i], context)
+    //   }
+    //   break
     case NodeTypes.IF_BRANCH:
     case NodeTypes.FOR:
     case NodeTypes.ELEMENT:
@@ -110,5 +120,31 @@ export function traverseChildren(parent, context: TransformContext) {
     context.parent = parent
     context.childIndex = i
     traverseNode(child, context)
+  }
+}
+
+export function createStructuralDirectiveTransform(
+  name: string | RegExp,
+  fn: Function
+) {
+  const matches = isString(name)
+    ? (n: string) => n === name
+    : (n: string) => name.test(n)
+
+  return (node, context) => {
+    if (node.type === NodeTypes.ELEMENT) {
+      const { props } = node
+      const exitFns: any[] = []
+      for (let i = 0; i < props.length; i++) {
+        const prop = props[i]
+        if (prop.type === NodeTypes.DIRECTIVE && matches(prop.name)) {
+          props.splice(i, 1)
+          i--
+          const onExit = fn(node, prop, context)
+          if (onExit) exitFns.push(onExit)
+        }
+      }
+      return exitFns
+    }
   }
 }

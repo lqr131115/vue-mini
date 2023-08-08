@@ -70,3 +70,54 @@ export function createCompoundExpression(children, loc) {
     children
   }
 }
+
+export function createConditionalExpression(
+  test,
+  consequent,
+  alternate,
+  newline = true
+) {
+  return {
+    type: NodeTypes.JS_CONDITIONAL_EXPRESSION,
+    test,
+    consequent,
+    alternate,
+    newline,
+    loc: {}
+  }
+}
+
+export function createCallExpression(callee, args, loc = {}) {
+  return {
+    type: NodeTypes.JS_CALL_EXPRESSION,
+    loc,
+    callee,
+    arguments: args
+  }
+}
+
+export function createObjectProperty(key: string, value) {
+  return {
+    type: NodeTypes.JS_PROPERTY,
+    loc: {},
+    key,
+    value
+  }
+}
+
+export function createSimpleExpression(content, isStatic: boolean, loc = {}) {
+  return {
+    type: NodeTypes.SIMPLE_EXPRESSION,
+    loc,
+    content,
+    isStatic
+  }
+}
+
+export function createObjectExpression(properties, loc = {}) {
+  return {
+    type: NodeTypes.JS_OBJECT_EXPRESSION,
+    loc,
+    properties
+  }
+}

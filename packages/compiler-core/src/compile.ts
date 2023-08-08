@@ -4,6 +4,7 @@ import { baseParse } from './parse'
 import { transform } from './transform'
 import { transformElement } from './transforms/transformElement'
 import { transformText } from './transforms/transformText'
+import { transformIf } from './transforms/vif'
 
 export function baseCompile(template: string, options = {}): CodegenResult {
   const ast = baseParse(template)
@@ -20,5 +21,5 @@ export function baseCompile(template: string, options = {}): CodegenResult {
 }
 
 export function getBaseTransformPreset() {
-  return [[transformElement, transformText]]
+  return [[transformElement, transformText, transformIf]]
 }
