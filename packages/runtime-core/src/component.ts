@@ -3,6 +3,8 @@ import { VNode } from './vnode'
 import { applyOptions } from './componentOptions'
 
 let uid = 0
+let compile: any = null
+
 export function createComponentInstance(vnode: VNode) {
   const type = vnode.type
   const instance = {
@@ -38,6 +40,10 @@ function setupStatefulComponent(instance) {
   }
 }
 
+export function registerRuntimeCompiler(_compile: any) {
+  compile = _compile
+}
+
 export function handleSetupResult(instance, setupResult) {
   if (isFunction(setupResult)) {
     instance.render = setupResult
@@ -49,6 +55,12 @@ export function finishComponentSetup(instance) {
   const Component = instance.type
 
   if (!instance.render) {
+    if (compile && !Component.render) {
+      const template = Component.template
+      if (template) {
+        Component.render = compile(template)
+      }
+    }
     instance.render = Component.render || NOOP
   }
 

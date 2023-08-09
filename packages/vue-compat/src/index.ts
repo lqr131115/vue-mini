@@ -1,4 +1,5 @@
 import { compile } from '@vue/compiler-dom'
+import { registerRuntimeCompiler } from '@vue/runtime-core'
 
 const compileCache = Object.create(null)
 
@@ -15,5 +16,7 @@ function compileToFunction(template: string, options?: any) {
 
   return (compileCache[key] = render)
 }
+
+registerRuntimeCompiler(compileToFunction)
 
 export { compileToFunction as compile }
