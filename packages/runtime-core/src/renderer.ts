@@ -11,6 +11,7 @@ import { createComponentInstance, setupComponent } from './component'
 import { ReactiveEffect } from 'packages/reactivity/src/effect'
 import { queuePreFlushCb } from './scheduler'
 import { renderComponentRoot } from './componentRenderUtils'
+import { createAppAPI } from './apiCreateApp'
 
 export interface RendererOptions {
   insert(el: Element, parent: Element, anchor?: null): void
@@ -377,7 +378,7 @@ export function baseCreateRenderer(options: RendererOptions): any {
           if (newIndex >= maxNewIndexSoFar) {
             maxNewIndexSoFar = newIndex
           } else {
-            moved = true  
+            moved = true
           }
           patch(prevChild, newChildren[newIndex], container, null)
           patched++
@@ -530,7 +531,8 @@ export function baseCreateRenderer(options: RendererOptions): any {
   }
 
   return {
-    render
+    render,
+    createApp: createAppAPI(render)
   }
 }
 
