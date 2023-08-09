@@ -91,11 +91,11 @@ export function traverseNode(node, context: TransformContext) {
     case NodeTypes.INTERPOLATION:
       context.helper(TO_DISPLAY_STRING)
       break
-    // case NodeTypes.IF:
-    //   for (let i = 0; i < node.branches.length; i++) {
-    //     traverseNode(node.branches[i], context)
-    //   }
-    //   break
+    case NodeTypes.IF:
+      for (let i = 0; i < node.branches.length; i++) {
+        traverseNode(node.branches[i], context)
+      }
+      break
     case NodeTypes.IF_BRANCH:
     case NodeTypes.FOR:
     case NodeTypes.ELEMENT:

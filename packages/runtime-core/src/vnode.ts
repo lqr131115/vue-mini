@@ -33,6 +33,10 @@ export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
 
 export { createBaseVNode as createElementVNode }
 
+export function createCommentVNode(text) {
+  return createVNode(Comment, null, text)
+}
+
 export const createVNode = _createVNode as typeof _createVNode
 
 function _createVNode(

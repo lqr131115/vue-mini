@@ -33,14 +33,14 @@ function createCodegenNodeForBranch(branch, keyIndex, context) {
     return createConditionalExpression(
       branch.condition,
       createChildrenCodegenNode(branch, keyIndex, context),
-      createCallExpression(context.helper(CREATE_COMMENT), [`v-if`, `true`])
+      createCallExpression(context.helper(CREATE_COMMENT), [`"v-if"`, `true`])
     )
   } else {
     return createChildrenCodegenNode(branch, keyIndex, context)
   }
 }
 
-function createChildrenCodegenNode(branch, keyIndex, context) {
+function createChildrenCodegenNode(branch, keyIndex: number, context) {
   const keyProperty = createObjectProperty(
     `key`,
     createSimpleExpression(`${keyIndex}`, false)
@@ -48,11 +48,11 @@ function createChildrenCodegenNode(branch, keyIndex, context) {
   const { children } = branch
   const firstChild = children[0]
   const needFragmentWrapper =
-    firstChild.length !== 1 || firstChild.type !== NodeTypes.ELEMENT
+    children.length !== 1 || firstChild.type !== NodeTypes.ELEMENT
   if (needFragmentWrapper) {
     // TODO
   } else {
-    const ret = firstChild
+    const ret = firstChild.codegenNode
     const vnodeCall = getMemoedVNodeCall(ret)
     injectProp(vnodeCall, keyProperty)
     return ret
@@ -73,12 +73,12 @@ function processIf(
     const branch = createIfBranch(node, dir)
     const ifNode = {
       type: NodeTypes.IF,
-      loc: {},
+      loc: node.loc,
       branches: [branch]
     }
     context.replaceNode(ifNode)
     if (processCodegen) {
-      processCodegen(ifNode, branch, true)
+      return processCodegen(ifNode, branch, true)
     }
   }
 }
@@ -86,7 +86,7 @@ function processIf(
 function createIfBranch(node, dir) {
   return {
     type: NodeTypes.IF_BRANCH,
-    loc: {},
+    loc: node.loc,
     children: [node],
     condition: dir.exp
   }

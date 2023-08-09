@@ -1,3 +1,4 @@
+import { isString } from '@vue/shared'
 import { CREATE_ELEMENT_VNODE } from './runtimeHelpers'
 
 export const enum NodeTypes {
@@ -96,11 +97,11 @@ export function createCallExpression(callee, args, loc = {}) {
   }
 }
 
-export function createObjectProperty(key: string, value) {
+export function createObjectProperty(key, value) {
   return {
     type: NodeTypes.JS_PROPERTY,
     loc: {},
-    key,
+    key: isString(key) ? createSimpleExpression(key, true) : key,
     value
   }
 }

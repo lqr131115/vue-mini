@@ -57,6 +57,7 @@ export function generate(ast) {
 function genNode(node, context) {
   switch (node.type) {
     case NodeTypes.ELEMENT:
+    case NodeTypes.IF:
       genNode(node.codegenNode!, context)
       break
     case NodeTypes.VNODE_CALL:
@@ -74,7 +75,55 @@ function genNode(node, context) {
     case NodeTypes.COMPOUND_EXPRESSION:
       genCompoundExpression(node, context)
       break
+    case NodeTypes.JS_CALL_EXPRESSION:
+      genCallExpression(node, context)
+      break
+    case NodeTypes.JS_CONDITIONAL_EXPRESSION:
+      genConditionalExpression(node, context)
+      break
   }
+}
+
+function genCallExpression(node, context) {
+  const { push, helper } = context
+  const callee = isString(node.callee) ? node.callee : helper(node.callee)
+
+  push(callee + `(`, node)
+  genNodeList(node.arguments, context)
+  push(`)`)
+}
+
+/**
+ * JS条件表达式的处理。
+ * 例如：
+ *  isShow
+        ? _createElementVNode("h1", null, ["hello"])
+        : _createCommentVNode("v-if", true),
+ */
+function genConditionalExpression(node, context) {
+  const { test, consequent, alternate, newline: needNewline } = node
+  const { push, indent, deindent, newline } = context
+  if (test.type === NodeTypes.SIMPLE_EXPRESSION) {
+    genExpression(test, context)
+  }
+  needNewline && indent()
+  context.indentLevel++
+  needNewline || push(` `)
+  push(`? `)
+  genNode(consequent, context)
+  context.indentLevel--
+  needNewline && newline()
+  needNewline || push(` `)
+  push(`: `)
+  const isNested = alternate.type === NodeTypes.JS_CONDITIONAL_EXPRESSION
+  if (!isNested) {
+    context.indentLevel++
+  }
+  genNode(alternate, context)
+  if (!isNested) {
+    context.indentLevel--
+  }
+  needNewline && deindent()
 }
 
 function genCompoundExpression(node, context) {
